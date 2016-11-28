@@ -20,9 +20,11 @@ namespace Vidly.Dtos
         //[Display(Name = "Membership Type")]
         public byte MembershipTypeId { get; set; }
 
+        public MembershipTypeDto MembershipType { get; set; }
+
         // the ? after DateTime makes it nullable, since DateTime is not nullable without this.
         //[Display(Name = "Date of Birth")]
-        [Min18YearsIfAMember] // get custom validation from another class we created
+        //[Min18YearsIfAMember] // get custom validation from another class we created
         public DateTime? Birthdate { get; set; }
     }
 }

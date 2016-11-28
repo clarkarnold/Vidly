@@ -15,7 +15,7 @@
 
 )
 
-<table class="table table-striped">
+<table id="movies" class="table table-striped">
     <thead>
         <tr>
             <th>
@@ -24,10 +24,13 @@
             <th>
                 Genre
             </th>
+            <th>
+                Delete
+            </th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var movie in Model)
+        @*@foreach (var movie in Model)
         {
             <tr>
                 <td>
@@ -37,13 +40,60 @@
                 <td>
                     @movie.Genre.Name
                 </td>
+                <td>
+                    <button data-movie-id="@movie.Id" class="btn btn-link js-delete">Delete</button>
+                </td>
             </tr>
-        }
+        }*@
     </tbody>
 </table>
 
 
-@foreach (var movie in Model)
+@section scripts
 {
-    
+    <script>
+        var table = $("#movies").DataTable({
+            ajax: {
+                url: "/api/movies",
+                dataSrc: ""
+            },
+            columns: [
+                {
+                    data: "name",
+                    render: function (data, type, movie) {
+                        return "<a href='/movies/edit/" + movie.id + "'>" + movie.name + "</a>";
+                    }
+                },
+                {
+                    data: "genre.name"
+                },
+                {
+                    data: "id",
+                    render: function (data) {
+                        return "<button class='btn btn-link js-delete' data-movie-id=" + data + ">Delete</button>";
+                    }
+                }
+            ]
+        });
+
+
+        $(document).ready(function () {
+            $("#movies").on("click", ".js-delete", function () {
+
+                var button = $(this);
+
+                bootbox.confirm("Do you want to delete this movie?", function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: "/api/movies/" + button.attr("data-movie-id"),
+                            method: "DELETE",
+                            success: function () {
+                                table.row(button.parents("tr")).remove().draw();
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
 }
